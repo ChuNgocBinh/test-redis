@@ -20,7 +20,7 @@ app.get('/users', (req, res) => {
 });
 
 app.get('/cached-users', (req, res) => {
-
+  console.log('event')
   try {
     client.get('users', (err, data) => {
       
