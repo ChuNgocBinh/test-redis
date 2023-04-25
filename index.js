@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const USERS_API = 'https://jsonplaceholder.typicode.com/users/';
 
-const { createClient } = require( 'redis');
+const { createClient } =require('redis');
 
 const client = createClient({
     password: '3XS3GAgRqQesfOIwcTYKVFZ2MMIOdh49',
