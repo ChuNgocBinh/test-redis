@@ -1,11 +1,18 @@
-const redis = require('redis');
-const client = redis.createClient();
 const axios = require('axios');
 const express = require('express');
 
 const app = express();
 const USERS_API = 'https://jsonplaceholder.typicode.com/users/';
 
+const { createClient } = require( 'redis');
+
+const client = createClient({
+    password: '3XS3GAgRqQesfOIwcTYKVFZ2MMIOdh49',
+    socket: {
+        host: 'redis-11343.c232.us-east-1-2.ec2.cloud.redislabs.com',
+        port: 11343
+    }
+});
 app.get('/users', (req, res) => {
 
   try {
@@ -19,10 +26,13 @@ app.get('/users', (req, res) => {
   }
 });
 
-app.get('/cached-users', (req, res) => {
+app.get('/cached-users', async(req, res) => {
   console.log('event')
+  // client.on('error', err => console.log('Redis Client Error', err));
+
+  // await client.connected();
   try {
-    client.get('users', (err, data) => {
+    client.get('user', (err, data) => {
       
       if (err) {
         console.error(err);
@@ -35,7 +45,7 @@ app.get('/cached-users', (req, res) => {
       } else {
         axios.get(`${USERS_API}`).then(function (response) {
           const users = response.data;
-          client.setex('users', 600, JSON.stringify(users));
+          client.setex('user', 600, JSON.stringify(users));
           console.log('Users retrieved from the API');
           res.status(200).send(users);
         });
@@ -46,7 +56,7 @@ app.get('/cached-users', (req, res) => {
   }
 });
 
-const PORT = 3000;
+const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server started at port: ${PORT}`);
 });
